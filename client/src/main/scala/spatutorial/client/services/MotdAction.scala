@@ -1,7 +1,6 @@
 package spatutorial.client.services
 
 import cats.Monad
-import cats.implicits._
 import japgolly.scalajs.react.CatsReact.ReactS
 import japgolly.scalajs.react.CatsReact.ReactST
 import spatutorial.client.services.Processing.Reading
@@ -16,7 +15,7 @@ class MotdAction[M[_] : Monad](loadMotd: => M[String]) {
     val loading = Reading()
     for {
       _ <- MotdReactState.modT(_.withProcessing(loading))
-      text <- loadMotd
+      text <- MotdReactState.ret(loadMotd)
       _ <- MotdReactState.modT(_.withoutProcessing(loading).withValue(text))
     } yield ()
   }

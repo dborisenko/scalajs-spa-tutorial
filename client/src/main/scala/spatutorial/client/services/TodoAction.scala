@@ -29,7 +29,7 @@ class TodoAction[M[_] : Monad](
     val loading = Reading()
     for {
       _ <- TodoReactState.modT(_.withProcessing(loading))
-      items <- loadTodos
+      items <- TodoReactState.ret(loadTodos)
       _ <- TodoReactState.modT(_.withoutProcessing(loading).foldValue(Todos(items))(_.copy(items = items)))
     } yield ()
   }
@@ -42,7 +42,7 @@ class TodoAction[M[_] : Monad](
     val creatingOrUpdating = (Creating or Updating) ()
     for {
       _ <- TodoReactState.modT(_.withProcessing(creatingOrUpdating))
-      items <- createOrUpdateTodo(item)
+      items <- TodoReactState.ret(createOrUpdateTodo(item))
       _ <- TodoReactState.modT(_.withoutProcessing(creatingOrUpdating).foldValue(Todos(items))(_.copy(items = items)))
     } yield ()
   }
@@ -51,7 +51,7 @@ class TodoAction[M[_] : Monad](
     val deleting = Deleting()
     for {
       _ <- TodoReactState.modT(_.withProcessing(deleting))
-      items <- deleteTodo(item)
+      items <- TodoReactState.ret(deleteTodo(item))
       _ <- TodoReactState.modT(_.withoutProcessing(deleting).foldValue(Todos(items))(_.copy(items = items)))
     } yield ()
   }
@@ -64,7 +64,7 @@ class TodoAction[M[_] : Monad](
   }
   def CloseTodoForm(item: Option[TodoItem]): ReactST[M, TodoState, Unit] = for {
     _ <- TodoReactState.modT(_.foldValue(Todos())(_.copy(selectedItem = None, showTodoForm = false)))
-    _ <- item.fold(TodoReactState.pure)(CreateOrUpdateTodo)
+    _ <- item.fold(TodoReactState.retT(()))(CreateOrUpdateTodo)
   } yield ()
 
 }

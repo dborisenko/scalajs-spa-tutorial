@@ -7,6 +7,7 @@ import japgolly.scalajs.react.vdom.html_<^._
 import scala.language.implicitConversions
 import scala.scalajs.js
 import scalacss.Defaults._
+import scalacss.ScalaCssReact._
 
 /**
  * Common Bootstrap components for scalajs-react
@@ -35,7 +36,7 @@ object Bootstrap {
 
     private val component = ScalaComponent.builder[Props]("Button")
       .renderPC((_, p, c) =>
-        <.button(^.style := bss.buttonOpt(p.style), ^.style := p.addStyles, ^.tpe := "button", ^.onClick --> p.onClick, c)
+        <.button(bss.buttonOpt(p.style), p.addStyles, ^.tpe := "button", ^.onClick --> p.onClick, c)
       ).build
 
     def apply(props: Props, children: ChildArg*): VdomElement = component(props)(children: _*)
@@ -47,9 +48,9 @@ object Bootstrap {
 
     private val component = ScalaComponent.builder[Props]("Panel")
       .renderPC((_, p, c) =>
-        <.div(^.style := bss.panelOpt(p.style),
-          <.div(^.style := bss.panelHeading, p.heading),
-          <.div(^.style := bss.panelBody, c)
+        <.div(bss.panelOpt(p.style),
+          <.div(bss.panelHeading, p.heading),
+          <.div(bss.panelBody, c)
         )
       ).build
 
@@ -76,12 +77,12 @@ object Bootstrap {
 
       def render(p: Props, c: PropsChildren): VdomElement = {
         val modalStyle = bss.modal
-        <.div(^.style := modalStyle.modal, ^.style := modalStyle.fade, ^.role := "dialog", ^.aria.hidden := true,
-          <.div(^.style := modalStyle.dialog,
-            <.div(^.style := modalStyle.content,
-              <.div(^.style := modalStyle.header, p.header(hide)),
-              <.div(^.style := modalStyle.body, c),
-              <.div(^.style := modalStyle.footer, p.footer(hide))
+        <.div(modalStyle.modal, modalStyle.fade, ^.role := "dialog", ^.aria.hidden := true,
+          <.div(modalStyle.dialog,
+            <.div(modalStyle.content,
+              <.div(modalStyle.header, p.header(hide)),
+              <.div(modalStyle.body, c),
+              <.div(modalStyle.footer, p.footer(hide))
             )
           )
         )

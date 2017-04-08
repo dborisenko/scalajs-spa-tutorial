@@ -8,6 +8,7 @@ import spatutorial.client.SPAMain.Loc
 import spatutorial.client.SPAMain.TodoLoc
 import spatutorial.client.components.Icon._
 import spatutorial.client.components._
+import scalacss.ScalaCssReact._
 
 object MainMenu {
   // shorthand for styles
@@ -40,7 +41,7 @@ object MainMenu {
           props.router.link(item.location)(item.icon, " ", item.label(props))
         )
       }
-      <.ul(tags: _*, ^.style := bss.navbar)
+      <.ul(tags: _*, bss.navbar)
     }
   }
 

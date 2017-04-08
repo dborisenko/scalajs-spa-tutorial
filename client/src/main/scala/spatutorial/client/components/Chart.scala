@@ -92,7 +92,7 @@ object Chart {
 
   private val Chart = ScalaComponent.builder[ChartProps]("Chart")
     .render_P(p =>
-      <.canvas(^.width := p.width, ^.height := p.height)
+      <.canvas(^.width := p.width.toString, ^.height := p.height.toString)
     )
     .componentDidMount(scope => Callback {
       // access context of the canvas

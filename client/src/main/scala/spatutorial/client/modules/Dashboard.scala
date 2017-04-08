@@ -1,7 +1,8 @@
 package spatutorial.client.modules
 
+import cats.Monad
+import cats.~>
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.component.Scala.Unmounted
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.html_<^._
 import spatutorial.client.SPAMain.Loc
@@ -13,7 +14,7 @@ import scala.language.existentials
 import scala.language.higherKinds
 import scala.util.Random
 
-class Dashboard[M[_]](motd: MotdAction[M]) {
+class Dashboard[M[_]](motd: MotdAction[M])(implicit t: M ~> CallbackTo, m: Monad[M]) {
 
   case class Props(router: RouterCtl[Loc])
 

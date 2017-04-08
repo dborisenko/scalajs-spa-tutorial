@@ -1,5 +1,7 @@
 package spatutorial.client.modules
 
+import cats.Monad
+import cats.~>
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.CatsReact._
 import japgolly.scalajs.react.vdom.html_<^._
@@ -8,10 +10,11 @@ import spatutorial.client.components._
 import spatutorial.client.logger._
 import spatutorial.client.services._
 import spatutorial.shared._
+import scalacss.ScalaCssReact._
 
 import scala.language.higherKinds
 
-class Todo[M[_]](action: TodoAction[M]) {
+class Todo[M[_]](action: TodoAction[M])(implicit t: M ~> CallbackTo, m: Monad[M]) {
   // create the React component for To Do management
   private val component = ScalaComponent.builder[Unit]("TODO")
     .initialState(State[Todos]())
@@ -80,19 +83,19 @@ object TodoForm {
       val headerText = if (s.item.id == "") "Add new todo" else "Edit todo"
       Modal(Modal.Props(
         // header contains a cancel button (X)
-        header = hide => <.span(<.button(^.tpe := "button", ^.style := bss.close, ^.onClick --> hide, Icon.close), <.h4(headerText)),
+        header = hide => <.span(<.button(^.tpe := "button", bss.close, ^.onClick --> hide, Icon.close), <.h4(headerText)),
         // footer has the OK button that submits the form before hiding it
         footer = hide => <.span(Button(Button.Props(submitForm() >> hide), "OK")),
         // this is called after the modal has been hidden (animation is completed)
         closed = formClosed(s, p)),
-        <.div(^.style := bss.formGroup,
+        <.div(bss.formGroup,
           <.label(^.`for` := "description", "Description"),
-          <.input.text(^.style := bss.formControl, ^.id := "description", ^.value := s.item.content,
+          <.input.text(bss.formControl, ^.id := "description", ^.value := s.item.content,
             ^.placeholder := "write description", ^.onChange ==> updateDescription)),
-        <.div(^.style := bss.formGroup,
+        <.div(bss.formGroup,
           <.label(^.`for` := "priority", "Priority"),
           // using defaultValue = "Normal" instead of option/selected due to React
-          <.select(^.style := bss.formControl, ^.id := "priority", ^.value := s.item.priority.toString, ^.onChange ==> updatePriority,
+          <.select(bss.formControl, ^.id := "priority", ^.value := s.item.priority.toString, ^.onChange ==> updatePriority,
             <.option(^.value := TodoHigh.toString, "High"),
             <.option(^.value := TodoNormal.toString, "Normal"),
             <.option(^.value := TodoLow.toString, "Low")

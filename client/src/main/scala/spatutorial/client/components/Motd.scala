@@ -1,5 +1,7 @@
 package spatutorial.client.components
 
+import cats.Monad
+import cats.~>
 import japgolly.scalajs.react.CatsReact._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
@@ -12,7 +14,7 @@ import scala.language.higherKinds
 /**
  * This is a simple component demonstrating how to display async data coming from the server
  */
-class Motd[M[_]](action: MotdAction[M]) {
+class Motd[M[_]](action: MotdAction[M])(implicit t: M ~> CallbackTo, m: Monad[M]) {
 
   // create the React component for holding the Message of the Day
   private val Motd = ScalaComponent.builder[Unit]("Motd")

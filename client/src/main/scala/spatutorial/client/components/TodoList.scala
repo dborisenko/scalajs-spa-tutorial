@@ -5,6 +5,7 @@ import japgolly.scalajs.react.vdom.html_<^._
 import spatutorial.client.components.Bootstrap.Button
 import spatutorial.client.components.Bootstrap.CommonStyle
 import spatutorial.shared._
+import scalacss.ScalaCssReact._
 
 import scala.language.higherKinds
 
@@ -29,7 +30,7 @@ object TodoList {
           case TodoNormal => style.item
           case TodoHigh   => style.itemOpt(CommonStyle.danger)
         }
-        <.li(^.style := itemStyle,
+        <.li(itemStyle,
           <.input.checkbox(^.checked := item.completed, ^.onChange --> p.stateChange(item.copy(completed = !item.completed))),
           <.span(" "),
           if (item.completed) <.s(item.content) else <.span(item.content),
@@ -37,7 +38,7 @@ object TodoList {
           Button(Button.Props(p.deleteItem(item), addStyles = Seq(bss.pullRight, bss.buttonXS)), "Delete")
         )
       }
-      <.ul(^.style := style.listGroup)(p.items map renderItem: _*)
+      <.ul(style.listGroup)(p.items map renderItem: _*)
     })
     .build
 

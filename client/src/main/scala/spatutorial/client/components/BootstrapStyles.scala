@@ -2,10 +2,10 @@ package spatutorial.client.components
 
 import japgolly.univeq.UnivEq
 import spatutorial.client.components.Bootstrap.CommonStyle
+import spatutorial.client.components.Bootstrap.CommonStyle._
 
 import scalacss.Defaults._
 import scalacss.internal.mutable
-import spatutorial.client.components.Bootstrap.CommonStyle._
 
 class BootstrapStyles(implicit r: mutable.Register) extends StyleSheet.Inline()(r) {
 

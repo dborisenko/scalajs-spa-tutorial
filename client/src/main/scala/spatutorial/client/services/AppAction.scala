@@ -1,5 +1,6 @@
 package spatutorial.client.services
 
+import cats.implicits._
 import autowire._
 import spatutorial.shared.Api
 import boopickle.Default._
