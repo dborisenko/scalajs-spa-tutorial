@@ -1,34 +1,34 @@
 package spatutorial.client.components
 
-import diode.react.ReactPot._
-import diode.react._
-import diode.data.Pot
+import japgolly.scalajs.react.CatsReact._
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.vdom.prefix_<^._
+import japgolly.scalajs.react.vdom.html_<^._
 import spatutorial.client.components.Bootstrap._
-import spatutorial.client.services.UpdateMotd
+import spatutorial.client.services.MotdAction
+import spatutorial.client.services.State
+
+import scala.language.higherKinds
 
 /**
-  * This is a simple component demonstrating how to display async data coming from the server
-  */
-object Motd {
+ * This is a simple component demonstrating how to display async data coming from the server
+ */
+class Motd[M[_]](action: MotdAction[M]) {
 
   // create the React component for holding the Message of the Day
-  val Motd = ReactComponentB[ModelProxy[Pot[String]]]("Motd")
-    .render_P { proxy =>
+  private val Motd = ScalaComponent.builder[Unit]("Motd")
+    .initialState(State[String]())
+    .renderS(($, state) =>
       Panel(Panel.Props("Message of the day"),
-        // render messages depending on the state of the Pot
-        proxy().renderPending(_ > 500, _ => <.p("Loading...")),
-        proxy().renderFailed(ex => <.p("Failed to load")),
-        proxy().render(m => <.p(m)),
-        Button(Button.Props(proxy.dispatchCB(UpdateMotd()), CommonStyle.danger), Icon.refresh, " Update")
+        state match {
+          case State.Value(data)   => <.p(data)
+          case State.Processing(_) => <.p("Loading...")
+          case _                   => <.p("Failed to load")
+        },
+        Button(Button.Props($.runState(action.UpdateMotd), CommonStyle.danger), Icon.refresh, "Update")
       )
-    }
-    .componentDidMount(scope =>
-      // update only if Motd is empty
-      Callback.when(scope.props.value.isEmpty)(scope.props.dispatchCB(UpdateMotd()))
     )
+    .componentDidMount(scope => scope.runState(action.UpdateMotd))
     .build
 
-  def apply(proxy: ModelProxy[Pot[String]]) = Motd(proxy)
+  def apply(): VdomElement = Motd()
 }

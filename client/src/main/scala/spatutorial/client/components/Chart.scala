@@ -1,7 +1,8 @@
 package spatutorial.client.components
 
-import japgolly.scalajs.react.vdom.prefix_<^._
-import japgolly.scalajs.react.{Callback, ReactComponentB}
+import japgolly.scalajs.react.Callback
+import japgolly.scalajs.react.ScalaComponent
+import japgolly.scalajs.react.vdom.html_<^._
 import org.scalajs.dom.raw.HTMLCanvasElement
 
 import scala.scalajs.js
@@ -89,21 +90,25 @@ object Chart {
 
   case class ChartProps(name: String, style: ChartStyle, data: ChartData, width: Int = 500, height: Int = 300)
 
-  val Chart = ReactComponentB[ChartProps]("Chart")
+  private val Chart = ScalaComponent.builder[ChartProps]("Chart")
     .render_P(p =>
-      <.canvas("width".reactAttr := p.width, "height".reactAttr := p.height)
+      <.canvas(^.width := p.width, ^.height := p.height)
     )
-    .domType[HTMLCanvasElement]
     .componentDidMount(scope => Callback {
       // access context of the canvas
-      val ctx = scope.getDOMNode().getContext("2d")
-      // create the actual chart using the 3rd party component
-      scope.props.style match {
-        case LineChart => new JSChart(ctx, ChartConfiguration("line", scope.props.data))
-        case BarChart => new JSChart(ctx, ChartConfiguration("bar", scope.props.data))
-        case _ => throw new IllegalArgumentException
+      scope.getDOMNode match {
+        case el: HTMLCanvasElement =>
+          val ctx = el.getContext("2d")
+          // create the actual chart using the 3rd party component
+          scope.props.style match {
+            case LineChart => new JSChart(ctx, ChartConfiguration("line", scope.props.data))
+            case BarChart  => new JSChart(ctx, ChartConfiguration("bar", scope.props.data))
+            case _         => throw new IllegalArgumentException
+          }
+        case _                     =>
+          TagMod()
       }
     }).build
 
-  def apply(props: ChartProps) = Chart(props)
+  def apply(props: ChartProps): VdomElement = Chart(props)
 }

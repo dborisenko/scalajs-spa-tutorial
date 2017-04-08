@@ -13,62 +13,62 @@ class BootstrapStyles(implicit r: mutable.Register) extends StyleSheet.Inline()(
 
   implicit val styleUnivEq: UnivEq[CommonStyle.Value] = new UnivEq[CommonStyle.Value] {}
 
-  val csDomain = Domain.ofValues(default, primary, success, info, warning, danger)
+  val csDomain: Domain[Bootstrap.CommonStyle.Value] = Domain.ofValues(default, primary, success, info, warning, danger)
 
-  val contextDomain = Domain.ofValues(success, info, warning, danger)
+  val contextDomain: Domain[Bootstrap.CommonStyle.Value] = Domain.ofValues(success, info, warning, danger)
 
-  def commonStyle[A: UnivEq](domain: Domain[A], base: String) = styleF(domain)(opt =>
+  def commonStyle[A: UnivEq](domain: Domain[A], base: String): A => StyleA = styleF(domain)(opt =>
     styleS(addClassNames(base, s"$base-$opt"))
   )
 
-  def styleWrap(classNames: String*) = style(addClassNames(classNames: _*))
+  def styleWrap(classNames: String*): StyleA = style(addClassNames(classNames: _*))
 
-  val buttonOpt = commonStyle(csDomain, "btn")
+  val buttonOpt: Bootstrap.CommonStyle.Value => scalacss.Defaults.StyleA = commonStyle(csDomain, "btn")
 
-  val button = buttonOpt(default)
+  val button: scalacss.Defaults.StyleA = buttonOpt(default)
 
-  val panelOpt = commonStyle(csDomain, "panel")
+  val panelOpt: Bootstrap.CommonStyle.Value => scalacss.Defaults.StyleA = commonStyle(csDomain, "panel")
 
-  val panel = panelOpt(default)
+  val panel: scalacss.Defaults.StyleA = panelOpt(default)
 
-  val labelOpt = commonStyle(csDomain, "label")
+  val labelOpt: Bootstrap.CommonStyle.Value => scalacss.Defaults.StyleA = commonStyle(csDomain, "label")
 
-  val label = labelOpt(default)
+  val label: scalacss.Defaults.StyleA = labelOpt(default)
 
-  val alert = commonStyle(contextDomain, "alert")
+  val alert: Bootstrap.CommonStyle.Value => scalacss.Defaults.StyleA = commonStyle(contextDomain, "alert")
 
-  val panelHeading = styleWrap("panel-heading")
+  val panelHeading: scalacss.Defaults.StyleA = styleWrap("panel-heading")
 
-  val panelBody = styleWrap("panel-body")
+  val panelBody: scalacss.Defaults.StyleA = styleWrap("panel-body")
 
   // wrap styles in a namespace, assign to val to prevent lazy initialization
   object modal {
-    val modal = styleWrap("modal")
-    val fade = styleWrap("fade")
-    val dialog = styleWrap("modal-dialog")
-    val content = styleWrap("modal-content")
-    val header = styleWrap("modal-header")
-    val body = styleWrap("modal-body")
-    val footer = styleWrap("modal-footer")
+    val modal: scalacss.Defaults.StyleA = styleWrap("modal")
+    val fade: scalacss.Defaults.StyleA = styleWrap("fade")
+    val dialog: scalacss.Defaults.StyleA = styleWrap("modal-dialog")
+    val content: scalacss.Defaults.StyleA = styleWrap("modal-content")
+    val header: scalacss.Defaults.StyleA = styleWrap("modal-header")
+    val body: scalacss.Defaults.StyleA = styleWrap("modal-body")
+    val footer: scalacss.Defaults.StyleA = styleWrap("modal-footer")
   }
 
-  val _modal = modal
+  val _modal: modal.type = modal
 
   object listGroup {
-    val listGroup = styleWrap("list-group")
-    val item = styleWrap("list-group-item")
-    val itemOpt = commonStyle(contextDomain, "list-group-item")
+    val listGroup: scalacss.Defaults.StyleA = styleWrap("list-group")
+    val item: scalacss.Defaults.StyleA = styleWrap("list-group-item")
+    val itemOpt: Bootstrap.CommonStyle.Value => scalacss.Defaults.StyleA = commonStyle(contextDomain, "list-group-item")
   }
 
-  val _listGroup = listGroup
-  val pullRight = styleWrap("pull-right")
-  val buttonXS = styleWrap("btn-xs")
-  val close = styleWrap("close")
+  val _listGroup: listGroup.type = listGroup
+  val pullRight: scalacss.Defaults.StyleA = styleWrap("pull-right")
+  val buttonXS: scalacss.Defaults.StyleA = styleWrap("btn-xs")
+  val close: scalacss.Defaults.StyleA = styleWrap("close")
 
-  val labelAsBadge = style(addClassName("label-as-badge"), borderRadius(1.em))
+  val labelAsBadge: StyleA = style(addClassName("label-as-badge"), borderRadius(1.em))
 
-  val navbar = styleWrap("nav", "navbar-nav")
+  val navbar: scalacss.Defaults.StyleA = styleWrap("nav", "navbar-nav")
 
-  val formGroup = styleWrap("form-group")
-  val formControl = styleWrap("form-control")
+  val formGroup: scalacss.Defaults.StyleA = styleWrap("form-group")
+  val formControl: scalacss.Defaults.StyleA = styleWrap("form-control")
 }

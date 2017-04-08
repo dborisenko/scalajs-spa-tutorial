@@ -1,21 +1,21 @@
 package spatutorial.client.modules
 
-import diode.data.Pot
-import diode.react._
 import japgolly.scalajs.react._
+import japgolly.scalajs.react.component.Scala.Unmounted
 import japgolly.scalajs.react.extra.router.RouterCtl
-import japgolly.scalajs.react.vdom.prefix_<^._
-import spatutorial.client.SPAMain.{Loc, TodoLoc}
+import japgolly.scalajs.react.vdom.html_<^._
+import spatutorial.client.SPAMain.Loc
+import spatutorial.client.SPAMain.TodoLoc
 import spatutorial.client.components._
+import spatutorial.client.services.MotdAction
 
-import scala.util.Random
 import scala.language.existentials
+import scala.language.higherKinds
+import scala.util.Random
 
-object Dashboard {
+class Dashboard[M[_]](motd: MotdAction[M]) {
 
-  case class Props(router: RouterCtl[Loc], proxy: ModelProxy[Pot[String]])
-
-  case class State(motdWrapper: ReactConnectProxy[Pot[String]])
+  case class Props(router: RouterCtl[Loc])
 
   // create dummy data for the chart
   val cp = Chart.ChartProps(
@@ -27,15 +27,17 @@ object Dashboard {
     )
   )
 
+  private val motdElement: VdomElement = new Motd(motd).apply()
+
   // create the React component for Dashboard
-  private val component = ReactComponentB[Props]("Dashboard")
+  private val component = ScalaComponent.builder[Props]("Dashboard")
     // create and store the connect proxy in state for later use
-    .initialState_P(props => State(props.proxy.connect(m => m)))
-    .renderPS { (_, props, state) =>
+    .initialState(())
+    .renderPS { (_, props, _) =>
       <.div(
         // header, MessageOfTheDay and chart components
         <.h2("Dashboard"),
-        state.motdWrapper(Motd(_)),
+        motdElement,
         Chart(cp),
         // create a link to the To Do view
         <.div(props.router.link(TodoLoc)("Check your todos!"))
@@ -43,5 +45,5 @@ object Dashboard {
     }
     .build
 
-  def apply(router: RouterCtl[Loc], proxy: ModelProxy[Pot[String]]) = component(Props(router, proxy))
+  def apply(router: RouterCtl[Loc]): VdomElement = component(Props(router))
 }
