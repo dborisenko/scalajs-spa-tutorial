@@ -1,7 +1,8 @@
 package spatutorial.client
 
-import japgolly.scalajs.react.ReactDOM
+import cats.Id
 import japgolly.scalajs.react.extra.router._
+import japgolly.scalajs.react.CatsReact._
 import japgolly.scalajs.react.vdom.TagOf
 import japgolly.scalajs.react.vdom.html_<^._
 import org.scalajs.dom
@@ -12,6 +13,7 @@ import spatutorial.client.modules._
 import spatutorial.client.services.AppAction
 
 import scala.concurrent.Future
+import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSExport
 import scalacss.Defaults._
@@ -27,8 +29,8 @@ object SPAMain extends js.JSApp {
 
   case object TodoLoc extends Loc
 
-  val dashboard: Dashboard[Future] = new Dashboard[Future](AppAction.motdAction)
-  val todo: Todo[Future] = new Todo[Future](AppAction.todoAction)
+  val dashboard: Dashboard[Id] = new Dashboard[Id](AppAction.motdAction)
+  val todo: Todo[Id] = new Todo[Id](AppAction.todoAction)
 
   // configure the router
   val routerConfig: RouterConfig[Loc] = RouterConfigDsl[Loc].buildConfig { dsl =>
