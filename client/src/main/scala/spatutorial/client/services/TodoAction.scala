@@ -32,7 +32,10 @@ class TodoAction[S[_] : Monad, A[_]: Monad](
       _ <- run(TodoReactState.modT(_.withProcessing(loading)))
       _ = for {
         items <- loadTodos
-      } yield run(TodoReactState.modT(_.withoutProcessing(loading).foldValue(Todos(items))(_.copy(items = items)))).runNow()
+        cb = for {
+          _ <- run(TodoReactState.modT(_.withoutProcessing(loading).foldValue(Todos(items))(_.copy(items = items))))
+        } yield ()
+      } yield cb.runNow()
     } yield ()
   }
 
@@ -46,7 +49,11 @@ class TodoAction[S[_] : Monad, A[_]: Monad](
       _ <- run(TodoReactState.modT(_.withProcessing(creatingOrUpdating)))
       _ = for {
         _ <- createOrUpdateTodo(item)
-      } yield run(TodoReactState.modT(_.withoutProcessing(creatingOrUpdating))).map(_ => RefreshTodos(run)).runNow()
+        cb = for {
+          _ <- run(TodoReactState.modT(_.withoutProcessing(creatingOrUpdating)))
+          _ <- RefreshTodos(run)
+        } yield ()
+      } yield cb.runNow()
     } yield ()
   }
 
@@ -56,7 +63,11 @@ class TodoAction[S[_] : Monad, A[_]: Monad](
       _ <- run(TodoReactState.modT(_.withProcessing(deleting)))
       _ = for {
         _ <- deleteTodo(item)
-      } yield run(TodoReactState.modT(_.withoutProcessing(deleting))).map(_ => RefreshTodos(run)).runNow()
+        cb = for {
+          _ <- run(TodoReactState.modT(_.withoutProcessing(deleting)))
+          _ <- RefreshTodos(run)
+        } yield ()
+      } yield cb.runNow()
     } yield ()
   }
 
