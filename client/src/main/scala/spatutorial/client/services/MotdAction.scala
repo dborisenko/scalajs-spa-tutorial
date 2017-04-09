@@ -18,11 +18,11 @@ class MotdAction[S[_] : Monad, A[_]: Monad](loadMotd: => A[String]) {
     log.info(s"Called UpdateMotd")
     new Exception().printStackTrace()
     val loading = Reading()
-    run(MotdReactState.modT(_.withProcessing(loading))).map { _ =>
-      for {
+    for {
+      _ <- run(MotdReactState.modT(_.withProcessing(loading)))
+      _ = for {
         text <- loadMotd
       } yield run(MotdReactState.modT(_.withoutProcessing(loading).withValue(text))).runNow()
-      ()
-    }
+    } yield ()
   }
 }
