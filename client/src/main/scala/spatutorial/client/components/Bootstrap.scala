@@ -36,7 +36,7 @@ object Bootstrap {
 
     private val component = ScalaComponent.builder[Props]("Button")
       .renderPC((_, p, c) =>
-        <.button(bss.buttonOpt(p.style), p.addStyles, ^.tpe := "button", ^.onClick --> p.onClick, c)
+        <.button(TagMod(bss.buttonOpt(p.style)), ^.tpe := "button", ^.onClick --> p.onClick, c, TagMod(p.addStyles.map(o => o: TagMod): _*))
       ).build
 
     def apply(props: Props, children: ChildArg*): VdomElement = component(props)(children: _*)
