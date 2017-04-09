@@ -14,14 +14,8 @@ import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 
 
 object AppAction {
-  var todosCache: Seq[TodoItem] = Seq.empty
-  var motdCache: String = ""
-
-  val todoAction: TodoAction[Id] = new TodoAction[Id](
-    loadTodos = {
-      AjaxClient[Api].getAllTodos().call().map(todosCache = _)
-      todosCache
-    },
+  val todoAction: TodoAction[Id, Future] = new TodoAction[Id, Future](
+    loadTodos = AjaxClient[Api].getAllTodos().call(),
     deleteTodo = item => AjaxClient[Api].deleteTodo(item.id).call(),
     createOrUpdateTodo = item => AjaxClient[Api].updateTodo(item).call()
   )

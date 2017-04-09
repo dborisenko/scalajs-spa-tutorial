@@ -14,7 +14,7 @@ import scalacss.ScalaCssReact._
 
 import scala.language.higherKinds
 
-class Todo[M[_]](action: TodoAction[M])(implicit t: M ~> CallbackTo, m: Monad[M]) {
+class Todo[S[_], A[_]](action: TodoAction[S, A])(implicit t: S ~> CallbackTo, m: Monad[S]) {
   // create the React component for To Do management
   private val component = ScalaComponent.builder[Unit]("TODO")
     .initialState(State[Todos]())
@@ -22,13 +22,18 @@ class Todo[M[_]](action: TodoAction[M])(implicit t: M ~> CallbackTo, m: Monad[M]
       state match {
         case State.Value(todos) =>
           val list: VdomNode = <.div(
-            TodoList(todos.items, $.runStateFn(action.CreateOrUpdateTodo), $.runStateFn(action.OpenUpdateTodoForm), $.runStateFn(action.DeleteTodo)),
-            Button(Button.Props($.runState(action.OpenCreateTodoForm)), Icon.plusSquare, " New")
+            TodoList(
+              todos.items,
+              item => action.CreateOrUpdateTodo($.runState(_))(item),
+              item => action.OpenUpdateTodoForm($.runState(_))(item),
+              item => action.DeleteTodo($.runState(_))(item)
+            ),
+            Button(Button.Props(action.OpenCreateTodoForm($.runState(_))), Icon.plusSquare, " New")
           )
           val form: Option[VdomNode] = {
             // if the dialog is open, add it to the panel
             if (todos.showTodoForm)
-              Some(TodoForm(TodoForm.Props(todos.selectedItem, $.runStateFn(action.CloseTodoForm))))
+              Some(TodoForm(TodoForm.Props(todos.selectedItem, item => action.CloseTodoForm($.runState(_))(item))))
             else // otherwise add an empty placeholder
               None
           }
@@ -37,7 +42,7 @@ class Todo[M[_]](action: TodoAction[M])(implicit t: M ~> CallbackTo, m: Monad[M]
         case _                   => <.p("Failed to load")
       }
     )
-    .componentDidMount($ => $.runState(action.RefreshTodos))
+    .componentDidMount($ => action.RefreshTodos($.runState(_)))
     .build
 
   /** Returns a function compatible with router location system while using our own props */
