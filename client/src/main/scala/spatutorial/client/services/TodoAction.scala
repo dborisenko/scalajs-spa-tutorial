@@ -46,7 +46,7 @@ class TodoAction[S[_] : Monad, A[_]: Monad](
       _ <- run(TodoReactState.modT(_.withProcessing(creatingOrUpdating)))
       _ = for {
         _ <- createOrUpdateTodo(item)
-      } yield RefreshTodos(run).runNow()
+      } yield run(TodoReactState.modT(_.withoutProcessing(creatingOrUpdating))).map(_ => RefreshTodos(run)).runNow()
     } yield ()
   }
 
@@ -56,7 +56,7 @@ class TodoAction[S[_] : Monad, A[_]: Monad](
       _ <- run(TodoReactState.modT(_.withProcessing(deleting)))
       _ = for {
         _ <- deleteTodo(item)
-      } yield RefreshTodos(run).runNow()
+      } yield run(TodoReactState.modT(_.withoutProcessing(deleting))).map(_ => RefreshTodos(run)).runNow()
     } yield ()
   }
 
