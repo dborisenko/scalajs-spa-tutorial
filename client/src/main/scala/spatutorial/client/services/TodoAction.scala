@@ -19,8 +19,8 @@ final case class Todos(
 
 class TodoAction[M[_] : Monad](
   loadTodos: => M[Seq[TodoItem]],
-  deleteTodo: TodoItem => M[Seq[TodoItem]],
-  createOrUpdateTodo: TodoItem => M[Seq[TodoItem]]
+  deleteTodo: TodoItem => M[Unit],
+  createOrUpdateTodo: TodoItem => M[Unit]
 ) {
   type TodoState = State[Todos]
   val TodoReactState: ReactS.FixT[M, TodoState] = ReactS.FixT[M, TodoState]
@@ -43,7 +43,7 @@ class TodoAction[M[_] : Monad](
     for {
       _ <- TodoReactState.modT(_.withProcessing(creatingOrUpdating))
       items <- TodoReactState.ret(createOrUpdateTodo(item))
-      _ <- TodoReactState.modT(_.withoutProcessing(creatingOrUpdating).foldValue(Todos(items))(_.copy(items = items)))
+      _ <- RefreshTodos
     } yield ()
   }
 
@@ -52,7 +52,7 @@ class TodoAction[M[_] : Monad](
     for {
       _ <- TodoReactState.modT(_.withProcessing(deleting))
       items <- TodoReactState.ret(deleteTodo(item))
-      _ <- TodoReactState.modT(_.withoutProcessing(deleting).foldValue(Todos(items))(_.copy(items = items)))
+      _ <- RefreshTodos
     } yield ()
   }
 

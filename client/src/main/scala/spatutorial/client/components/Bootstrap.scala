@@ -61,12 +61,13 @@ object Bootstrap {
 
     // header and footer are functions, so that they can get access to the the hide() function for their buttons
     case class Props(header: Callback => VdomElement, footer: Callback => VdomElement, closed: Callback, backdrop: Boolean = true,
-                     keyboard: Boolean = true)
+                     keyboard: Boolean = true, children: VdomElement)
 
     private class Backend(t: BackendScope[Props, Unit]) {
-      private def hide = t.getDOMNode.map { elem =>
+      private def hide: Callback = t.getDOMNode.map { elem =>
         // instruct Bootstrap to hide the modal
         jQuery(elem).modal("hide")
+        ()
       }
 
       // jQuery event handler to be fired when the modal has been hidden
@@ -75,13 +76,13 @@ object Bootstrap {
         t.props.flatMap(_.closed).runNow()
       }
 
-      def render(p: Props, c: PropsChildren): VdomElement = {
+      def render(p: Props): VdomElement = {
         val modalStyle = bss.modal
         <.div(modalStyle.modal, modalStyle.fade, ^.role := "dialog", ^.aria.hidden := true,
           <.div(modalStyle.dialog,
             <.div(modalStyle.content,
               <.div(modalStyle.header, p.header(hide)),
-              <.div(modalStyle.body, c),
+              <.div(modalStyle.body, p.children),
               <.div(modalStyle.footer, p.footer(hide))
             )
           )
@@ -100,7 +101,7 @@ object Bootstrap {
       })
       .build
 
-    def apply(props: Props, children: ChildArg*): VdomElement = component.applyGeneric(props)(children: _*)
+    def apply(props: Props): VdomElement = component(props)
   }
 
 }

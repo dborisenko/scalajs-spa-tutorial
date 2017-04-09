@@ -87,21 +87,23 @@ object TodoForm {
         // footer has the OK button that submits the form before hiding it
         footer = hide => <.span(Button(Button.Props(submitForm() >> hide), "OK")),
         // this is called after the modal has been hidden (animation is completed)
-        closed = formClosed(s, p)),
-        <.div(bss.formGroup,
-          <.label(^.`for` := "description", "Description"),
-          <.input.text(bss.formControl, ^.id := "description", ^.value := s.item.content,
-            ^.placeholder := "write description", ^.onChange ==> updateDescription)),
-        <.div(bss.formGroup,
-          <.label(^.`for` := "priority", "Priority"),
-          // using defaultValue = "Normal" instead of option/selected due to React
-          <.select(bss.formControl, ^.id := "priority", ^.value := s.item.priority.toString, ^.onChange ==> updatePriority,
-            <.option(^.value := TodoHigh.toString, "High"),
-            <.option(^.value := TodoNormal.toString, "Normal"),
-            <.option(^.value := TodoLow.toString, "Low")
+        closed = formClosed(s, p),
+        children = <.div(
+          <.div(bss.formGroup,
+            <.label(^.`for` := "description", "Description"),
+            <.input.text(bss.formControl, ^.id := "description", ^.value := s.item.content,
+              ^.placeholder := "write description", ^.onChange ==> updateDescription)),
+          <.div(bss.formGroup,
+            <.label(^.`for` := "priority", "Priority"),
+            // using defaultValue = "Normal" instead of option/selected due to React
+            <.select(bss.formControl, ^.id := "priority", ^.value := s.item.priority.toString, ^.onChange ==> updatePriority,
+              <.option(^.value := TodoHigh.toString, "High"),
+              <.option(^.value := TodoNormal.toString, "Normal"),
+              <.option(^.value := TodoLow.toString, "Low")
+            )
           )
         )
-      )
+      ))
     }
   }
 

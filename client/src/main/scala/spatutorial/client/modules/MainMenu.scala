@@ -35,13 +35,13 @@ object MainMenu {
   private class Backend($: BackendScope[Props, Unit]) {
 
     def render(props: Props): VdomElement = {
-      // build a list of menu items
-      val tags: Seq[TagMod] = for (item <- menuItems) yield {
+      val seq = for (item <- menuItems) yield {
         <.li(^.key := item.idx, (^.className := "active") when (props.currentLoc == item.location),
-          props.router.link(item.location)(item.icon, " ", item.label(props))
+          props.router.link(item.location).apply(item.icon, " ", item.label(props))
         )
       }
-      <.ul(tags: _*, bss.navbar)
+      // build a list of menu items
+      <.ul(bss.navbar, TagMod(seq: _*))
     }
   }
 
