@@ -29,7 +29,7 @@ object SPAMain extends js.JSApp {
 
   case object TodoLoc extends Loc
 
-  val dashboard: Dashboard[Id] = new Dashboard[Id](AppAction.motdAction)
+  val dashboard: Dashboard[Id, Future] = new Dashboard[Id, Future](AppAction.motdAction)
   val todo: Todo[Id] = new Todo[Id](AppAction.todoAction)
 
   // configure the router

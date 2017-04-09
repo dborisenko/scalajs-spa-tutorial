@@ -14,7 +14,7 @@ import scala.language.existentials
 import scala.language.higherKinds
 import scala.util.Random
 
-class Dashboard[M[_]](motd: MotdAction[M])(implicit t: M ~> CallbackTo, m: Monad[M]) {
+class Dashboard[S[_], A[_]](motd: MotdAction[S, A])(implicit t: S ~> CallbackTo, m: Monad[S]) {
 
   case class Props(router: RouterCtl[Loc])
 

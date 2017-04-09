@@ -23,7 +23,7 @@ class ApiService extends Api {
   }
 
   // update a Todo
-  override def updateTodo(item: TodoItem): Seq[TodoItem] = {
+  override def updateTodo(item: TodoItem): Unit = {
     // TODO, update database etc :)
     if(todos.exists(_.id == item.id)) {
       todos = todos.collect {
@@ -42,7 +42,7 @@ class ApiService extends Api {
   }
 
   // delete a Todo
-  override def deleteTodo(itemId: String): Seq[TodoItem] = {
+  override def deleteTodo(itemId: String): Unit = {
     println(s"Deleting item with id = $itemId")
     Thread.sleep(300)
     todos = todos.filterNot(_.id == itemId)
